@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMTLA - Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Firebase App (obrigatório) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <!-- Firebase Auth -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <!-- Logo circular centralizada -->
+    <img src="Andaluz.jpg" alt="Logo IMTLA" class="logo-img" />
+
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+      <p><a href="cadastro.html">Não tem conta? Cadastre-se</a></p>
+    </form>
+  </div>
+
+  <!-- Script de autenticação Firebase -->
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEmwH746N1ebPpxVImboyXgP74IaTULl0",
+      authDomain: "imtla-app-e7b78.firebaseapp.com",
+      projectId: "imtla-app-e7b78",
+      storageBucket: "imtla-app-e7b78.appspot.com",
+      messagingSenderId: "787422407393",
+      appId: "1:787422407393:web:275cb3669c80c46a1b65a0"
+    };
+
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Lógica de login
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("Login realizado com sucesso!");
+          window.location.href = "home.html"; // redireciona para a home após login
+        })
+        .catch((error) => {
+          alert("Erro no login: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>

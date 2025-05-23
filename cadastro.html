@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro - IMTLA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="js/auth.js"></script>
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <h2>Cadastra-se</h2>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Nome Completo" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Senha" required /> 
+
+      <select id="role" required>
+        <option value="">Selecionar Perfil</option>
+        <option value="aluno">Aluno</option>
+        <option value="pai">Pai</option>
+      </select>
+
+      <!-- Novo campo para ID do estudante -->
+      <input
+        type="text"
+        id="studentId"
+        placeholder="ID ou Número do Estudante"
+        required
+      />
+
+      <button type="submit">Cadastrar</button>
+      <p><a href="index.html">Já tem conta? Faça login</a></p>
+    </form>
+  </div>
+</body>
+</html>
+
+<script type="module">
+  import { cadastrarUsuario } from './main.js';
+
+  const form = document.getElementById('registerForm');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('password').value;
+
+    try {
+      const userCredential = await cadastrarUsuario(email, senha);
+      alert('Cadastro realizado com sucesso!');
+      window.location.href = 'index.html'; // redireciona para login
+    } catch (error) {
+      alert('Erro no cadastro: ' + error.message);
+    }
+  });
+</script>
