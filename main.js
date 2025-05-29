@@ -35,7 +35,7 @@ function logout() {
 }
 
 // -------------------------------
-// Navegação entre Seções do voltar para anterior
+// Navegação entre Seções
 // -------------------------------
 let historicoSecoes = [];
 
@@ -105,17 +105,46 @@ function abrirWhatsapp() {
 }
 
 // -------------------------------
+// Função: Adicionar Nota ao Calendário
+// -------------------------------
+function adicionarNota() {
+  const data = document.getElementById("data").value;
+  const nota = document.getElementById("nota").value;
+
+  if (data && nota) {
+    const lista = document.getElementById("listaNotas");
+
+    const itemWrapper = document.createElement("div");
+    itemWrapper.className = "nota-wrapper";
+
+    const item = document.createElement("div");
+    item.className = "nota-item";
+    item.innerHTML = `<strong>${data}</strong><br>${nota}`;
+
+    const btnExcluir = document.createElement("button");
+    btnExcluir.className = "btn-excluir";
+    btnExcluir.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+    btnExcluir.onclick = () => {
+      itemWrapper.remove();
+      alert("Nota removida com sucesso!");
+    };
+
+    itemWrapper.appendChild(item);
+    itemWrapper.appendChild(btnExcluir);
+    lista.appendChild(itemWrapper);
+
+    document.getElementById("data").value = "";
+    document.getElementById("nota").value = "";
+    alert("Nota adicionada com sucesso!");
+  } else {
+    alert("Por favor, preencha a data e a nota.");
+  }
+}
+
+// -------------------------------
 // Gráfico de Notas com Chart.js
 // -------------------------------
-window.onload = function () {
-  // Ativa seção baseada no hash da URL
-  const hash = window.location.hash?.replace('#', '');
-  if (hash && document.getElementById(hash)) {
-    document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
-    document.getElementById(hash).classList.add('ativa');
-  }
-
-  // Gráfico
+function inicializarGrafico() {
   const ctx = document.getElementById('graficoNotas');
   if (ctx) {
     const notas = [8, 16, 12, 12, 16, 12, 17, 18];
@@ -161,17 +190,13 @@ window.onload = function () {
       }
     });
   }
-
-  // Ativa notificações push
-  iniciarNotificacoesPush();
-};
+}
 
 // -------------------------------
 // Notificações Push com VAPID
 // -------------------------------
 const publicVapidKey = 'BIdsCsBcsnkWE0vnR5y8hWlooxoCk4Dhzu2zJkURcWaXbwZzb5A-7mm1E441r_fIUDQd_APb-JOaBNCIrjxdpZI';
 
-// Utilitário: Converte VAPID de base64 para Uint8Array
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -179,7 +204,6 @@ function urlBase64ToUint8Array(base64String) {
   return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
 }
 
-// Função: Iniciar notificações push
 function iniciarNotificacoesPush() {
   if ('Notification' in window && 'serviceWorker' in navigator) {
     Notification.requestPermission().then(permission => {
@@ -190,16 +214,10 @@ function iniciarNotificacoesPush() {
             applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
           }).then(subscription => {
             console.log('Inscrito nas notificações push:', subscription);
-
-            // Aqui você pode enviar a inscrição para seu backend se quiser
-            // fetch('/subscribe', { method: 'POST', body: JSON.stringify(subscription) });
-
-            // Notificação de boas-vindas
             registration.showNotification("Notificações Ativadas", {
               body: "Você receberá novidades do IMTLA.",
               icon: "icone.png"
             });
-
           }).catch(err => {
             console.error('Erro ao se inscrever nas notificações:', err);
           });
@@ -213,59 +231,30 @@ function iniciarNotificacoesPush() {
   }
 }
 
-// funcionalidades do calendario
-function adicionarNota() {
-  const data = document.getElementById('data').value;
-  const nota = document.getElementById('nota').value.trim();
-
-  if (!data || !nota) {
-    alert('Por favor, preencha a data e a nota.');
-    return;
+// -------------------------------
+// Inicialização Geral
+// -------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  // Ativa seção com base no hash da URL
+  const hash = window.location.hash?.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
+    document.getElementById(hash).classList.add('ativa');
   }
 
-  const notasSalvas = JSON.parse(localStorage.getItem('notasCalendario')) || [];
-  notasSalvas.push({ data, nota });
-  localStorage.setItem('notasCalendario', JSON.stringify(notasSalvas));
+  inicializarGrafico();
+  iniciarNotificacoesPush();
+});
 
-  document.getElementById('nota').value = '';
-  atualizarListaNotas();
+// -------------------------------
+// Registro do Service Worker
+// -------------------------------
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then(registration => {
+      console.log('Service Worker registrado com sucesso:', registration);
+    }).catch(error => {
+      console.error('Falha ao registrar Service Worker:', error);
+    });
+  });
 }
-
-function adicionarNota() {
-  const data = document.getElementById("data").value;
-  const nota = document.getElementById("nota").value;
-
-  if (data && nota) {
-    const lista = document.getElementById("listaNotas");
-
-    const itemWrapper = document.createElement("div");
-    itemWrapper.className = "nota-wrapper";
-
-    const item = document.createElement("div");
-    item.className = "nota-item";
-    item.innerHTML = `<strong>${data}</strong><br>${nota}`;
-
-    const btnExcluir = document.createElement("button");
-    btnExcluir.className = "btn-excluir";
-    btnExcluir.innerHTML = `<i class="fas fa-trash-alt"></i>`;
-    btnExcluir.onclick = () => {
-      itemWrapper.remove();
-      alert("Nota removida com sucesso!");
-    };
-
-    itemWrapper.appendChild(item);
-    itemWrapper.appendChild(btnExcluir);
-    lista.appendChild(itemWrapper);
-
-    document.getElementById("data").value = "";
-    document.getElementById("nota").value = "";
-    alert("Nota adicionada com sucesso!");
-  } else {
-    alert("Por favor, preencha a data e a nota.");
-  }
-}
-
-// Executa quando a página carrega
-document.addEventListener('DOMContentLoaded', atualizarListaNotas);
-
-

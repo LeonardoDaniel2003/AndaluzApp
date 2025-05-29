@@ -4,19 +4,23 @@
   <!-- Metadados básicos -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d6efd" />
+  
   <title>IMTLA - Login</title>
 
   <!-- Estilo externo -->
   <link rel="stylesheet" href="style.css" />
 
   <!-- Manifesto para PWA -->
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Ícone para dispositivos -->
+  <link rel="icon" href="/icon-192.png" type="image/png" />
 
   <!-- Ícones Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    integrity="sha512-...redacted..."
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
@@ -29,7 +33,7 @@
 
     .password-container input {
       width: 100%;
-      padding-right: 40px; /* espaço para o ícone */
+      padding-right: 40px;
     }
 
     .toggle-password {
@@ -54,30 +58,26 @@
 
     <!-- Formulário de Login -->
     <form id="loginForm">
-      <!-- Campo de email -->
       <input type="email" id="email" placeholder="Email" required />
-
-      <!-- Campo de senha com ícone de olho -->
       <div class="password-container">
         <input type="password" id="password" placeholder="Senha" required />
         <i class="fa-solid fa-eye toggle-password" onclick="togglePassword()"></i>
       </div>
-
-      <!-- Botão de envio -->
       <button type="submit">Entrar</button>
-
-      <!-- Link para cadastro -->
       <p><a href="cadastro.html">Não tem conta? Cadastre-se</a></p>
     </form>
   </div>
 
-  <!-- Firebase SDKs compatíveis -->
+  <!-- Firebase SDKs (somente uma versão!) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-  <!-- Script de configuração e login com Firebase -->
+  <!-- Script principal do app -->
+  <script src="main.js"></script>
+
+  <!-- Script de configuração e login -->
   <script>
-    // Configuração do Firebase
+    // Configuração Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAEmwH746N1ebPpxVImboyXgP74IaTULl0",
       authDomain: "imtla-app-e7b78.firebaseapp.com",
@@ -87,29 +87,27 @@
       appId: "1:787422407393:web:275cb3669c80c46a1b65a0"
     };
 
-    // Inicialização do Firebase
+    // Inicialização
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Evento de envio do formulário
+    // Login
     document.getElementById("loginForm").addEventListener("submit", (e) => {
-      e.preventDefault(); // Evita recarregar a página
-
+      e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // Autenticação com Firebase
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
           alert("Login realizado com sucesso!");
-          window.location.href = "home-screen.html"; // Redireciona após login
+          window.location.href = "home-screen.html";
         })
         .catch(error => {
-          alert("Erro: " + error.message); // Mostra erros
+          alert("Erro: " + error.message);
         });
     });
 
-    // Função para alternar visibilidade da senha
+    // Mostrar/ocultar senha
     function togglePassword() {
       const passwordInput = document.getElementById("password");
       const icon = document.querySelector(".toggle-password");
@@ -123,6 +121,13 @@
         icon.classList.remove("fa-eye-slash");
         icon.classList.add("fa-eye");
       }
+    }
+
+    // Registro opcional de Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('Service Worker registrado com sucesso!'))
+        .catch(err => console.error('Erro ao registrar o Service Worker:', err));
     }
   </script>
 </body>
