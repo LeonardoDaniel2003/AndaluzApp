@@ -1,3 +1,4 @@
+
 // -------------------------------
 // Firebase: Configuração e Inicialização
 // -------------------------------
@@ -266,3 +267,5 @@ function adicionarNota() {
 
 // Executa quando a página carrega
 document.addEventListener('DOMContentLoaded', atualizarListaNotas);
+
+

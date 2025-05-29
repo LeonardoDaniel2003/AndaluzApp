@@ -1,11 +1,13 @@
 {
-  "name": "IMTLA Comunicação",
+  "name": "IMTLA-app",
   "short_name": "IMTLA",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "orientation": "portrait",
+  "lang": "pt-BR",
   "icons": [
     {
       "src": "icon-192.png",
@@ -19,4 +21,5 @@
     }
   ]
 }
+
 

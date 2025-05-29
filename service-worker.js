@@ -1,4 +1,6 @@
 const CACHE_NAME = "imtla-cache-v1";
+
+// Arquivos locais a serem armazenados em cache
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -9,24 +11,18 @@ const FILES_TO_CACHE = [
   "/manifest.json",
   "/icon-192.png",
   "/icon-512.png",
-
-  // Recursos externos para funcionar offline
-  "https://cdn.jsdelivr.net/npm/chart.js",
-  "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js",
-  "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  "/offline.html"
 ];
 
-
-// Instala o service worker e faz cache dos arquivos
+// Instala o service worker e faz cache dos arquivos locais
 self.addEventListener("install", (event) => {
-  self.skipWaiting(); // força ativação imediata
+  self.skipWaiting(); // Ativa o novo service worker imediatamente
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
   );
 });
 
-// Ativação do novo service worker e limpeza de caches antigos
+// Ativa o novo service worker e remove caches antigos
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keyList) =>
@@ -39,24 +35,24 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
-  self.clients.claim(); // assume controle imediatamente
+  self.clients.claim(); // Assume controle das páginas abertas
 });
 
-// Intercepta fetch para servir do cache ou fazer request à rede
+// Intercepta requisições e tenta servir do cache primeiro
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return (
         response ||
-        fetch(event.request).then((response) => {
-          // Armazena em cache as respostas que vêm da rede para uso futuro
-          const clonedResponse = response.clone();
+        fetch(event.request).then((liveResponse) => {
+          // Clona a resposta da rede e armazena no cache
+          const clonedResponse = liveResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, clonedResponse);
           });
-          return response;
+          return liveResponse;
         }).catch(() => {
-          // Pode personalizar com fallback offline
+          // Se estiver offline e for uma página HTML, mostra offline.html
           if (event.request.destination === "document") {
             return caches.match("/offline.html");
           }
@@ -92,7 +88,7 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Ação ao clicar na notificação
+// Ao clicar na notificação, abre a URL associada
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
@@ -108,3 +104,12 @@ self.addEventListener("notificationclick", (event) => {
     })
   );
 });
+
+// Registro automático do service worker (coloque no seu main.js ou index.html)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log("✅ Service Worker registrado com sucesso"))
+      .catch((err) => console.error("❌ Falha ao registrar o Service Worker", err));
+  });
+}
