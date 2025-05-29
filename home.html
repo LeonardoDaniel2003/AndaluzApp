@@ -1,268 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+  <!-- Metadados -->
   <meta charset="UTF-8" />
   <title>IMTLA - Início</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="index, follow" />
+  <!-- CSS local -->
   <link rel="stylesheet" href="style.css" />
+  <!-- Biblioteca FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Ícones Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-
-    
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background-color: #f8f9fa;
-    }
-
-    header {
-      background-color: #007bff;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 18px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .logo-circular {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid white;
-    }
-
-    .top-icons {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .perfil-icone {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: white;
-      color: #007bff;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      border: 2px solid white;
-    }
-
-    .perfil-icone i {
-      font-size: 20px;
-    }
-
-    .perfil-icone img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      display: block;
-    }
-
-    .notificacoes-icone {
-      font-size: 22px;
-      cursor: pointer;
-      color: white;
-      background-color: #0056b3;
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: 2px solid white;
-      user-select: none;
-    }
-
-    .btn-voltar {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background-color: white;
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      z-index: 2000;
-      cursor: pointer;
-    }
-
-    .btn-voltar i {
-      font-size: 18px;
-      color: #007bff;
-    }
-
-    .whatsapp-float {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      bottom: 80px;
-      right: 20px;
-      background-color: #25d366;
-      color: white;
-      border-radius: 50%;
-      text-align: center;
-      font-size: 28px;
-      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-      z-index: 2000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-    }
-
-    .whatsapp-float i {
-      margin-top: 2px;
-    }
-
-    main {
-      padding: 15px;
-      padding-bottom: 100px;
-    }
-
-    .secao {
-      display: none;
-    }
-
-    .secao.ativa {
-      display: block;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    form input,
-    form textarea,
-    form button {
-      display: block;
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    form button {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      border: none;
-    }
-
-    nav.menu-icone {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #fff;
-      border-top: 1px solid #ddd;
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      padding: 10px 0;
-      z-index: 1000;
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .menu-icone button {
-      background: none;
-      border: none;
-      font-size: 18px;
-      color: #007bff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      margin: 5px;
-    }
-
-    .menu-icone button span {
-      font-size: 10px;
-    }
-
-    #calendar {
-      max-width: 100%;
-    }
-
-    .logout-btn {
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      margin-top: 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    @media screen and (max-width: 768px) {
-      header {
-        font-size: 16px;
-        padding: 10px;
-      }
-
-      .menu-icone button {
-        font-size: 16px;
-      }
-
-      .menu-icone button span {
-        font-size: 9px;
-      }
-
-      canvas {
-        max-width: 100%;
-      }
-    }
-  </style>
 </head>
 <body>
 
+  <!-- =======================
+       CABEÇALHO DO APLICATIVO
+       ======================= -->
   <header>
+    <!-- Logo do IMTLA -->
     <img src="Andaluz.jpg" alt="Logo IMTLA" class="logo-circular" />
+
+    <!-- Ícones superiores (perfil e calendário) -->
     <div class="top-icons">
       <div class="perfil-icone" id="perfilIcon" title="Perfil" onclick="showSection('perfil')">
         <i class="fas fa-user"></i>
       </div>
-      <div class="notificacoes-icone" title="Notificações" onclick="showSection('notificacoes')">
-        <i class="fas fa-bell"></i>
+      <div class="calendario-icone" title="Calendário" onclick="showSection('calendario')">
+        <i class="fas fa-calendar-alt"></i>
       </div>
     </div>
-    <button class="btn-voltar" onclick="voltarParaAnterior()">
-  <i class="fas fa-arrow-left"></i>
-</button>
 
+    <!-- Botão de voltar -->
+    <button class="btn-voltar" onclick="voltarParaAnterior()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
   </header>
 
+  <!-- ==========================
+       CONTEÚDO PRINCIPAL
+       ========================== -->
   <main>
+
+    <!-- Seção: Gráfico de Notas -->
     <section id="notas" class="secao ativa">
-      <h2>Notas do Aluno</h2>
+      <h2>Notas do 1º Trimestre</h2>
       <canvas id="graficoNotas"></canvas>
     </section>
 
+    <!-- Seção: Localização -->
     <section id="localizacao" class="secao">
       <h2>Localização</h2>
       <p><strong>Bairro Rocha Pinto</strong>, Av 21 de Janeiro, Luanda - Angola</p>
-      <iframe width="100%" height="250" style="border:0" loading="lazy" allowfullscreen
+      <iframe width="100%" height="250" style="border:0;" loading="lazy" allowfullscreen
         src="https://www.google.com/maps?q=-8.849265,13.248852&z=15&output=embed"></iframe>
     </section>
 
+    <!-- Seção: Boletim Escolar -->
     <section id="boletim" class="secao">
       <h2>Consultar Boletim</h2>
       <form onsubmit="mostrarBoletim(event)">
@@ -272,33 +67,46 @@
       <div id="resultadoBoletim"></div>
     </section>
 
+    <!-- Seção: Calendário de Eventos -->
     <section id="calendario" class="secao">
       <h2>Calendário de Eventos</h2>
-      <div id="calendar"></div>
+      <div class="container">
+        <label for="data">Escolha uma data:</label>
+        <input type="date" id="data" />
+        
+        <label for="nota">Escreva uma nota:</label>
+        <textarea id="nota" rows="4" placeholder="Ex: Aniversário do João, reunião, etc."></textarea>
+        
+        <button onclick="adicionarNota()">Salvar Nota</button>
+
+        <div class="notas" id="listaNotas">
+          <!-- Notas do calendário aparecerão aqui -->
+        </div>
+      </div>
     </section>
 
-    <section id="notificacoes" class="secao">
-      <h2>Notificações</h2>
-      <ul>
-        <li>📢 Reunião de pais na sexta-feira</li>
-        <li>📢 Boletim disponível</li>
-      </ul>
-    </section>
-
+    <!-- Seção: Perfil do Usuário -->
     <section id="perfil" class="secao">
       <h2>Perfil do Usuário</h2>
       <p>Nome: Leonardo Daniel Vihemba</p>
       <p>Email: leonardodanielvihemba@gmail.com</p>
       <p>Perfil: Aluno</p>
+
+      <!-- Troca de foto de perfil -->
       <label for="fotoPerfilInput" style="cursor:pointer; color:#007bff; text-decoration:underline;">
         Trocar Foto de Perfil
       </label>
       <input type="file" accept="image/*" id="fotoPerfilInput" style="display:none" onchange="trocarFotoPerfil(event)" />
-      <br>
+      <br />
+
+      <!-- Botão de logout -->
       <button class="logout-btn" onclick="logout()">Sair</button>
     </section>
   </main>
 
+  <!-- ==========================
+       MENU INFERIOR DE NAVEGAÇÃO
+       ========================== -->
   <nav class="menu-icone">
     <button onclick="showSection('notas')">
       <i class="fas fa-chart-line"></i><span>Notas</span>
@@ -312,137 +120,34 @@
     <button onclick="showSection('boletim')">
       <i class="fas fa-file-alt"></i><span>Boletim</span>
     </button>
-    <button onclick="showSection('calendario')">
-      <i class="fas fa-calendar-alt"></i><span>Calendário</span>
+    <button onclick="window.location.href='mailto:leonardodanielvihemba@gmail.com'">
+      <i class="fas fa-envelope"></i><span>Email</span>
     </button>
   </nav>
 
-  <a href="https://wa.me/244946605295" class="whatsapp-float" target="_blank">
+  <!-- =======================
+       BOTÃO FLUTUANTE WHATSAPP
+       ======================= -->
+  <a href="https://wa.me/244946605295" class="whatsapp-float" target="_blank" aria-label="Abrir WhatsApp">
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <script>
-    function showSection(id) {
-      document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
-      document.getElementById(id).classList.add('ativa');
-    }
+  <!-- =======================
+       BIBLIOTECAS E SCRIPTS
+       ======================= -->
 
-    function logout() {
-      alert('Você saiu.');
-      window.location.href = 'index.html';
-    }
+  <!-- FullCalendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
 
-   let historicoSecoes = [];
+  <!-- Chart.js (Gráficos) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-function showSection(id) {
-  const secaoAtual = document.querySelector('.secao.ativa');
-  if (secaoAtual && secaoAtual.id !== id) {
-    historicoSecoes.push(secaoAtual.id);
-  }
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-  document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
-  document.getElementById(id).classList.add('ativa');
-}
+  <!-- Script principal da aplicação -->
+  <script src="main.js"></script>
 
-function voltarParaAnterior() {
-  if (historicoSecoes.length > 0) {
-    const ultimaSecao = historicoSecoes.pop();
-    showSection(ultimaSecao);
-  }
-}
-
-
-    function mostrarBoletim(event) {
-      event.preventDefault();
-      const id = document.getElementById('idAluno').value;
-      const resultado = document.getElementById('resultadoBoletim');
-      if (id === '123') {
-        resultado.innerHTML = `<h3>Boletim do Aluno 123</h3>
-        <ul>
-          <li>Lingua Portuguesa: 14</li>
-          <li>Matemática: 16</li>
-          <li>Física: 12</li>
-          <li>Química: 12</li>
-          <li>TREI: 12</li>
-          <li>OGI: 17</li>
-          <li>Empreendedorismo: 17</li>
-          <li>Educação Física: 18</li>
-          <li>FAI: 19</li>
-        </ul>`;
-      } else {
-        resultado.innerHTML = `<p>ID do aluno não encontrado.</p>`;
-      }
-    }
-
-    function trocarFotoPerfil(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const perfilIcon = document.getElementById('perfilIcon');
-          perfilIcon.innerHTML = `<img src="${e.target.result}" alt="Foto de Perfil" />`;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function abrirWhatsapp() {
-      window.open('https://wa.me/244946605295', '_blank');
-    }
-
-    window.onload = function () {
-      // Gráfico
-      const ctx = document.getElementById('graficoNotas');
-      if (ctx) {
-        const notas = [14, 16, 12, 12, 16, 12, 17, 18];
-        const disciplinas = ['Lingua Portuguesa', 'Matemática', 'Física', 'TREI', 'OGI', 'QUIMICA', 'EMPREENDEDORISMO', 'EDUCAÇÃO FISICA'];
-        const coresPontos = notas.map(nota => nota < 10 ? 'red' : nota <= 15 ? 'orange' : 'green');
-
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: disciplinas,
-            datasets: [{
-              label: 'Notas',
-              data: notas,
-              fill: true,
-              backgroundColor: 'rgba(0, 123, 255, 0.2)',
-              borderColor: '#007bff',
-              tension: 0.4,
-              pointBackgroundColor: coresPontos,
-              pointBorderColor: '#ffffff',
-              pointRadius: 6,
-              pointHoverRadius: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 20,
-                title: { display: true, text: 'Nota' }
-              },
-              x: {
-                title: { display: true, text: 'Disciplina' }
-              }
-            },
-            plugins: { legend: { display: true } }
-          }
-        });
-      }
-
-      // Calendário
-     const calendarEl = document.getElementById('calendar');
-if (calendarEl) {
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    height: 400,
-  });
-  calendar.render();
-}
-
-    }
-  </script>
 </body>
 </html>

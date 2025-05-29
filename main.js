@@ -1,13 +1,6 @@
-// Importações do Firebase modular SDK
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut
-} from "firebase/auth";
-
-// Configuração do Firebase
+// -------------------------------
+// Firebase: Configuração e Inicialização
+// -------------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAEmwH746N1ebPpxVImboyXgP74IaTULl0",
   authDomain: "imtla-app-e7b78.firebaseapp.com",
@@ -17,155 +10,259 @@ const firebaseConfig = {
   appId: "1:787422407393:web:275cb3669c80c46a1b65a0"
 };
 
-// Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-// Funções de autenticação
-export function cadastrarUsuario(email, senha) {
-  return createUserWithEmailAndPassword(auth, email, senha);
-}
-
-export function loginUsuario(email, senha) {
-  return signInWithEmailAndPassword(auth, email, senha);
-}
-
-export function logoutUsuario() {
-  return signOut(auth);
-}
-
-// Chave pública VAPID (para notificações push)
-const publicVapidKey = "BIdsCsBcsnkWE0vnR5y8hWlooxoCk4Dhzu2zJkURcWaXbwZzb5A-7mm1E441r_fIUDQd_APb-JOaBNCIrjxdpZI";
-
-// Quando o DOM estiver pronto
-document.addEventListener("DOMContentLoaded", () => {
-  const role = localStorage.getItem("role");
-
-  if (!role) {
-    alert("Você precisa estar logado.");
+// -------------------------------
+// Autenticação: Redireciona se não logado
+// -------------------------------
+auth.onAuthStateChanged(user => {
+  if (!user) {
     window.location.href = "index.html";
-    return;
-  }
-
-  if (role === "aluno") {
-    mostrarGraficoNotas();
-  } else {
-    const secaoNotas = document.getElementById("notas");
-    if (secaoNotas) {
-      secaoNotas.classList.remove("ativa");
-    }
-  }
-
-  const formMensagem = document.getElementById("formMensagem");
-  if (formMensagem && role !== "escola") {
-    formMensagem.style.display = "none";
-  }
-
-  if (formMensagem) {
-    formMensagem.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const destino = document.getElementById("emailDestino")?.value;
-      const texto = document.getElementById("mensagemTexto")?.value;
-
-      if (destino && texto) {
-        const mailto = `mailto:${destino}?subject=Mensagem do IMTLA&body=${encodeURIComponent(texto)}`;
-        window.location.href = mailto;
-      } else {
-        alert("Por favor, preencha o email e a mensagem.");
-      }
-    });
-  }
-
-  // Notificações Push
-  if ("Notification" in window && "serviceWorker" in navigator) {
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        console.log("Permissão de notificação concedida.");
-
-        navigator.serviceWorker.ready.then(async (registration) => {
-          try {
-            const subscription = await registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-            });
-
-            await fetch('/subscribe', {
-              method: 'POST',
-              body: JSON.stringify(subscription),
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-
-            console.log('Usuário inscrito para notificações push.');
-          } catch (error) {
-            console.error("Erro ao se inscrever para notificações:", error);
-          }
-        });
-      }
-    });
   }
 });
 
-// Função para exibir uma seção do app
-export function showSection(id) {
-  document.querySelectorAll(".secao").forEach(secao => {
-    secao.classList.remove("ativa");
+// -------------------------------
+// Função: Logout
+// -------------------------------
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "index.html";
+  }).catch(error => {
+    console.error("Erro ao sair:", error);
   });
+}
 
-  const alvo = document.getElementById(id);
-  if (alvo) {
-    alvo.classList.add("ativa");
-    window.scrollTo(0, 0);
+// -------------------------------
+// Navegação entre Seções do voltar para anterior
+// -------------------------------
+let historicoSecoes = [];
+
+function showSection(id) {
+  const secaoAtual = document.querySelector('.secao.ativa');
+  if (secaoAtual && secaoAtual.id !== id) {
+    historicoSecoes.push(secaoAtual.id);
+  }
+  document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
+  document.getElementById(id).classList.add('ativa');
+}
+
+function voltarParaAnterior() {
+  if (historicoSecoes.length > 0) {
+    const ultimaSecao = historicoSecoes.pop();
+    showSection(ultimaSecao);
   }
 }
 
-// Função para exibir gráfico de notas
-export function mostrarGraficoNotas() {
-  const canvas = document.getElementById("graficoNotas");
-  if (!canvas) return;
+// -------------------------------
+// Função: Mostrar Boletim
+// -------------------------------
+function mostrarBoletim(event) {
+  event.preventDefault();
+  const id = document.getElementById('idAluno').value;
+  const resultado = document.getElementById('resultadoBoletim');
 
-  const ctx = canvas.getContext("2d");
-
-  const notas = [15, 8, 12, 10, 18];
-  const disciplinas = ["Português", "Matemática", "Física", "Química", "Biologia"];
-
-  
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: disciplinas,
-      datasets: [{
-        label: "Notas",
-        data: notas,
-        borderColor: "#333",
-        backgroundColor: "transparent",
-        pointBackgroundColor: cores,
-        pointBorderColor: cores,
-        borderWidth: 2,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 20
-        }
-      }
-    }
-  });
+  if (id === '123') {
+    resultado.innerHTML = `
+      <h3>Boletim do Aluno 123</h3>
+      <ul>
+        <li>Lingua Portuguesa: 14</li>
+        <li>Matemática: 16</li>
+        <li>Física: 12</li>
+        <li>Química: 12</li>
+        <li>TREI: 12</li>
+        <li>OGI: 17</li>
+        <li>Empreendedorismo: 17</li>
+        <li>Educação Física: 18</li>
+        <li>FAI: 19</li>
+      </ul>`;
+  } else {
+    resultado.innerHTML = `<p>ID do aluno não encontrado.</p>`;
+  }
 }
 
-// Função utilitária para converter a chave pública em formato adequado
+// -------------------------------
+// Função: Trocar Foto de Perfil
+// -------------------------------
+function trocarFotoPerfil(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const perfilIcon = document.getElementById('perfilIcon');
+      perfilIcon.innerHTML = `<img src="${e.target.result}" alt="Foto de Perfil" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// -------------------------------
+// Função: Abrir WhatsApp
+// -------------------------------
+function abrirWhatsapp() {
+  window.open('https://wa.me/244946605295', '_blank');
+}
+
+// -------------------------------
+// Gráfico de Notas com Chart.js
+// -------------------------------
+window.onload = function () {
+  // Ativa seção baseada no hash da URL
+  const hash = window.location.hash?.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('ativa'));
+    document.getElementById(hash).classList.add('ativa');
+  }
+
+  // Gráfico
+  const ctx = document.getElementById('graficoNotas');
+  if (ctx) {
+    const notas = [8, 16, 12, 12, 16, 12, 17, 18];
+    const disciplinas = ['Lingua Portuguesa', 'Matemática', 'Física', 'TREI', 'OGI', 'QUÍMICA', 'EMPREENDEDORISMO', 'EDUCAÇÃO FÍSICA'];
+    const coresBarras = notas.map(nota =>
+      nota < 10 ? 'rgba(255, 99, 132, 0.7)' :
+      nota <= 15 ? 'rgba(255, 159, 64, 0.7)' :
+      'rgba(75, 192, 192, 0.7)'
+    );
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: disciplinas,
+        datasets: [{
+          label: 'Notas',
+          data: notas,
+          backgroundColor: coresBarras,
+          borderColor: '#333',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 20,
+            title: { display: true, text: 'Nota' }
+          },
+          x: {
+            title: { display: true, text: 'Disciplina' }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => `Nota: ${ctx.raw}`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Ativa notificações push
+  iniciarNotificacoesPush();
+};
+
+// -------------------------------
+// Notificações Push com VAPID
+// -------------------------------
+const publicVapidKey = 'BIdsCsBcsnkWE0vnR5y8hWlooxoCk4Dhzu2zJkURcWaXbwZzb5A-7mm1E441r_fIUDQd_APb-JOaBNCIrjxdpZI';
+
+// Utilitário: Converte VAPID de base64 para Uint8Array
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+  return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
 }
 
-function voltarParaLogin() {
-  window.location.href = "index.html"; // ou o link para sua tela de login
+// Função: Iniciar notificações push
+function iniciarNotificacoesPush() {
+  if ('Notification' in window && 'serviceWorker' in navigator) {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        navigator.serviceWorker.register('service-worker.js').then(registration => {
+          registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+          }).then(subscription => {
+            console.log('Inscrito nas notificações push:', subscription);
+
+            // Aqui você pode enviar a inscrição para seu backend se quiser
+            // fetch('/subscribe', { method: 'POST', body: JSON.stringify(subscription) });
+
+            // Notificação de boas-vindas
+            registration.showNotification("Notificações Ativadas", {
+              body: "Você receberá novidades do IMTLA.",
+              icon: "icone.png"
+            });
+
+          }).catch(err => {
+            console.error('Erro ao se inscrever nas notificações:', err);
+          });
+        }).catch(error => {
+          console.error("Erro ao registrar service worker:", error);
+        });
+      }
+    });
+  } else {
+    console.warn("Navegador não suporta notificações push.");
+  }
 }
+
+// funcionalidades do calendario
+function adicionarNota() {
+  const data = document.getElementById('data').value;
+  const nota = document.getElementById('nota').value.trim();
+
+  if (!data || !nota) {
+    alert('Por favor, preencha a data e a nota.');
+    return;
+  }
+
+  const notasSalvas = JSON.parse(localStorage.getItem('notasCalendario')) || [];
+  notasSalvas.push({ data, nota });
+  localStorage.setItem('notasCalendario', JSON.stringify(notasSalvas));
+
+  document.getElementById('nota').value = '';
+  atualizarListaNotas();
+}
+
+function adicionarNota() {
+  const data = document.getElementById("data").value;
+  const nota = document.getElementById("nota").value;
+
+  if (data && nota) {
+    const lista = document.getElementById("listaNotas");
+
+    const itemWrapper = document.createElement("div");
+    itemWrapper.className = "nota-wrapper";
+
+    const item = document.createElement("div");
+    item.className = "nota-item";
+    item.innerHTML = `<strong>${data}</strong><br>${nota}`;
+
+    const btnExcluir = document.createElement("button");
+    btnExcluir.className = "btn-excluir";
+    btnExcluir.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+    btnExcluir.onclick = () => {
+      itemWrapper.remove();
+      alert("Nota removida com sucesso!");
+    };
+
+    itemWrapper.appendChild(item);
+    itemWrapper.appendChild(btnExcluir);
+    lista.appendChild(itemWrapper);
+
+    document.getElementById("data").value = "";
+    document.getElementById("nota").value = "";
+    alert("Nota adicionada com sucesso!");
+  } else {
+    alert("Por favor, preencha a data e a nota.");
+  }
+}
+
+// Executa quando a página carrega
+document.addEventListener('DOMContentLoaded', atualizarListaNotas);

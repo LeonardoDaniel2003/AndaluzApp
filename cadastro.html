@@ -2,57 +2,122 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>Cadastro - IMTLA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMTLA - Cadastro</title>
   <link rel="stylesheet" href="style.css" />
-  <script defer src="js/auth.js"></script>
+  <style>
+    .password-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-container input {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body class="login-body">
   <div class="login-container">
-    <h2>Cadastra-se</h2>
+    <h2>Cadastrar</h2>
     <form id="registerForm">
-      <input type="text" id="name" placeholder="Nome Completo" required />
+      <input type="text" id="fullName" placeholder="Nome completo" required />
+
+      <input type="tel" id="phone" inputmode="numeric" pattern="\d*" placeholder="Número de telefone" required />
+
       <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Senha" required /> 
+
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Senha" required />
+        <span class="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
 
       <select id="role" required>
-        <option value="">Selecionar Perfil</option>
+        <option value="">Cadastrar como...</option>
         <option value="aluno">Aluno</option>
-        <option value="pai">Pai</option>
+        <option value="encarregado">Encarregado de Educação</option>
       </select>
 
-      <!-- Novo campo para ID do estudante -->
-      <input
-        type="text"
-        id="studentId"
-        placeholder="ID ou Número do Estudante"
-        required
-      />
-
       <button type="submit">Cadastrar</button>
-      <p><a href="index.html">Já tem conta? Faça login</a></p>
+      <p><a href="index.html">Já tem conta? Entrar</a></p>
     </form>
   </div>
+
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEmwH746N1ebPpxVImboyXgP74IaTULl0",
+      authDomain: "imtla-app-e7b78.firebaseapp.com",
+      projectId: "imtla-app-e7b78",
+      storageBucket: "imtla-app-e7b78.appspot.com",
+      messagingSenderId: "787422407393",
+      appId: "1:787422407393:web:275cb3669c80c46a1b65a0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value;
+      const phone = document.getElementById("phone").value;
+      const role = document.getElementById("role").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!role) {
+        alert("Por favor, selecione o tipo de usuário.");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          localStorage.setItem("fullName", fullName);
+          localStorage.setItem("phone", phone);
+          localStorage.setItem("role", role);
+
+          console.log("Usuário cadastrado:", {
+            uid: user.uid,
+            nome: fullName,
+            telefone: phone,
+            tipo: role
+          });
+
+          alert("Cadastro realizado com sucesso!");
+          window.location.href = "home-screen.html";
+        })
+        .catch(error => {
+          alert("Erro: " + error.message);
+        });
+    });
+
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+    }
+  </script>
 </body>
 </html>
-
-<script type="module">
-  import { cadastrarUsuario } from './main.js';
-
-  const form = document.getElementById('registerForm');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('password').value;
-
-    try {
-      const userCredential = await cadastrarUsuario(email, senha);
-      alert('Cadastro realizado com sucesso!');
-      window.location.href = 'index.html'; // redireciona para login
-    } catch (error) {
-      alert('Erro no cadastro: ' + error.message);
-    }
-  });
-</script>
