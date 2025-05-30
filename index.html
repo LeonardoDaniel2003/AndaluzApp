@@ -88,8 +88,18 @@
     };
 
     // Inicialização
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+ 
+  // Firebase já deve estar inicializado antes
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      // Se já estiver logado, redireciona para a tela principal
+      window.location.href = "home-screen.html";
+    }
+    // Caso contrário, permanece na tela de login
+  });
 
     // Login
     document.getElementById("loginForm").addEventListener("submit", (e) => {
@@ -106,6 +116,7 @@
           alert("Erro: " + error.message);
         });
     });
+
 
     // Mostrar/ocultar senha
     function togglePassword() {
@@ -130,5 +141,6 @@
         .catch(err => console.error('Erro ao registrar o Service Worker:', err));
     }
   </script>
+
 </body>
 </html>
